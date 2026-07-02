@@ -3,4 +3,4 @@ IDA Loader for Toshiba CELL Regza NAND Dump. Map basics in ram, NAND itself is m
 Loaded NAND is cleared from ECC.
 
 RAM loaded stuff is: BEAT, KERN, ROOT additionally mapped: BE7C, LPAR, PRMC.
-Todo: init ram, add vectors, maybe more.
+Todo: init ram, add vectors, disassemble kernel (and decide which r2 use as ida won't allow multi toc...), maybe more.
