@@ -5,6 +5,7 @@ import idaapi
 import ida_bytes
 import idc
 import ida_diskio
+import ida_kernwin
 
 def load_file(f, neflags, format):
 
@@ -98,11 +99,26 @@ def load_file(f, neflags, format):
 		paddr += 0x840 # 0x800 chunk + 0x40 ecc or whatever.
 		size  += 0x800
 
-	#process_config_line("PPC_TOC=0x123456");
-	#set_name(0x123456,"TOC",0)
+	process_config_line("PPC_TOC=0xA0098");
+	set_name(0xA0098,"TOC",0)
+
+	sid = add_struc(-1, "OPD_s", 0);
+	add_struc_member(sid, "func_ptr", 0x00, idaapi.FF_QWORD | idaapi.FF_0OFF, 0, 8)
+	add_struc_member(sid, "toc_ptr", 0x08, idaapi.FF_QWORD | idaapi.FF_0OFF, 0, 8)
+	add_struc_member(sid, "env_ptr", 0x10, idaapi.FF_QWORD, 0, 8)
+
+	addr = 0x9CB90
+	end  = 0xA2B18
+	while addr < end:
+		create_struct(addr, 0x18, "OPD_s")
+		idaapi.create_insn(get_qword(addr))
+		# Ida ppc module ftl...
+		#idaapi.add_func(get_qword(addr), BADADDR)
+		addr += 0x18
 
 	idaapi.create_insn(0x100)
 	set_name(0x3200,"start",0)
+	ida_kernwin.jumpto(0x100)
 	return 1
 
 def accept_file(f, n):
