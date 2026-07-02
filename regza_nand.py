@@ -22,6 +22,7 @@ def load_file(f, neflags, format):
 	add_segm_ex(0x0000002000000000, 0x0000002008000000, 0, 2, 0, 0, 1); # NAND -- FIX ME! ADDR! 
 	set_segm_attr(0x0000000000000000, SEGATTR_PERM, SEGPERM_EXEC | SEGPERM_READ | SEGPERM_WRITE)
 	set_segm_attr(0x0000000000086BAC, SEGATTR_PERM, SEGPERM_READ)	
+	set_segm_attr(0x00000000000A2B20, SEGATTR_PERM, SEGPERM_EXEC | SEGPERM_READ | SEGPERM_WRITE)
 	set_segm_attr(0x0000002000000000, SEGATTR_PERM, SEGPERM_EXEC | SEGPERM_READ)	
 
 	print("[regza_loader] TODO! Initializing RAM segment")
@@ -49,7 +50,7 @@ def load_file(f, neflags, format):
 	print("[regza_loader] Loading KERN segment into database")
 	requested_size = 0x52CB10
 	paddr = 0xCE400
-	vaddr = 0x52CB10
+	vaddr = 0x20400000
 	size  = 0
 	while(size < requested_size):
 		f.file2base(paddr, vaddr, 0x800 + vaddr, 0)
@@ -118,6 +119,25 @@ def load_file(f, neflags, format):
 		#idaapi.add_func(get_qword(addr), BADADDR)
 		addr += 0x18
 
+	set_name(0x0100, "__vector_SystemReset", 0)
+	set_name(0x0300, "__vector_DataStorage", 0)
+	set_name(0x0380, "__vector_DataSegment", 0)
+	set_name(0x0400, "__vector_InstructionStorage", 0)
+	set_name(0x0480, "__vector_InstructionSegment", 0)
+	set_name(0x0500, "__vector_External", 0)
+	set_name(0x0600, "__vector_Alignment", 0)
+	set_name(0x0700, "__vector_Program", 0)
+	set_name(0x0800, "__vector_FloatingPointUnavailable", 0)
+	set_name(0x0900, "__vector_Decrementer", 0)
+	set_name(0x0980, "__vector_HypervisorDecrementer", 0)
+	set_name(0x0C00, "__vector_SystemCall", 0)
+	set_name(0x0D00, "__vector_Trace", 0)
+	set_name(0x0F20, "__vector_AltivecUnavailable", 0)
+	set_name(0x1200, "__vector_SystemError", 0)
+	set_name(0x1600, "__vector_Maintenance", 0)
+	set_name(0x1800, "__vector_ThermalManagement", 0)
+	# 16FAC syscall_handler
+	
 	idaapi.create_insn(0x100)
 	set_name(0x3200,"start",0)
 	ida_kernwin.jumpto(0x100)
