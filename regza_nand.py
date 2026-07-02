@@ -15,11 +15,13 @@ def load_file(f, neflags, format):
 
 	print("[regza_loader] Creating segments")
 	add_segm_ex(0x0000000000000000, 0x0000000040000000, 0, 2, 0, 0, 1); # RAM
+	add_segm_ex(0x0000000000086BAC, 0x00000000000A2B18, 0, 2, 0, 0, 1); # BEAT RAM (set 0x86BAC - 0xA2B18 RX only, technically it isn't. For compiler it was, so it's safe to do so for code clarity.)	
 	add_segm_ex(0x0000000044100000, 0x0000000044100800, 0, 2, 0, 0, 1); # BE7C
 	add_segm_ex(0x000000004C000000, 0x000000004C03B000, 0, 2, 0, 0, 1); # LPAR
 	add_segm_ex(0x000000004FE00000, 0x000000004FE00800, 0, 2, 0, 0, 1); # PMRC
 	add_segm_ex(0x0000002000000000, 0x0000002008000000, 0, 2, 0, 0, 1); # NAND -- FIX ME! ADDR! 
 	set_segm_attr(0x0000000000000000, SEGATTR_PERM, SEGPERM_EXEC | SEGPERM_READ | SEGPERM_WRITE)
+	set_segm_attr(0x0000000000086BAC, SEGATTR_PERM, SEGPERM_READ)	
 	set_segm_attr(0x0000002000000000, SEGATTR_PERM, SEGPERM_EXEC | SEGPERM_READ)	
 
 	print("[regza_loader] TODO! Initializing RAM segment")
