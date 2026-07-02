@@ -25,6 +25,8 @@ def load_file(f, neflags, format):
 	set_segm_attr(0x00000000000A2B20, SEGATTR_PERM, SEGPERM_EXEC | SEGPERM_READ | SEGPERM_WRITE)
 	set_segm_attr(0x0000002000000000, SEGATTR_PERM, SEGPERM_EXEC | SEGPERM_READ)	
 
+	add_mapping(0xC000000000000000, 0x20400000, 0x800000) # shadow map kernel, not sure about size.
+
 	print("[regza_loader] TODO! Initializing RAM segment")
 
 
@@ -102,14 +104,22 @@ def load_file(f, neflags, format):
 		paddr += 0x840 # 0x800 chunk + 0x40 ecc or whatever.
 		size  += 0x800
 
-	process_config_line("PPC_TOC=0xA0098");
-	set_name(0xA0098,"TOC",0)
+	print("[regza_loader] Set selected TOC")
+	#BEAT TOC
+	#process_config_line("PPC_TOC=0xA0098");
+	#set_name(0xA0098,"TOC",0)
+
+	#KERN TOC	
+	process_config_line("PPC_TOC=0x209105C8");
+	set_name(0x209105C8,"TOC",0)
+	
 
 	sid = add_struc(-1, "OPD_s", 0);
 	add_struc_member(sid, "func_ptr", 0x00, idaapi.FF_QWORD | idaapi.FF_0OFF, 0, 8)
 	add_struc_member(sid, "toc_ptr", 0x08, idaapi.FF_QWORD | idaapi.FF_0OFF, 0, 8)
 	add_struc_member(sid, "env_ptr", 0x10, idaapi.FF_QWORD, 0, 8)
 
+	print("[regza_loader] Create BEAT code")
 	addr = 0x9CB90
 	end  = 0xA2B18
 	while addr < end:
@@ -118,7 +128,23 @@ def load_file(f, neflags, format):
 		# Ida ppc module ftl...
 		#idaapi.add_func(get_qword(addr), BADADDR)
 		addr += 0x18
+		
+	#print("[regza_loader] Create KERN code")
+	#addr = 0x208B8CA8
+	#end  = 0x209085C8
+	#while addr < end:
+	#	create_struct(addr, 0x18, "OPD_s")
+	#	print("addr1 = 0x{:X}".format(get_dword(addr+4)))
+	#	print("addr2 = 0x{:X}".format(get_dword(addr+4) + 0x20400000))
+	#	if get_dword(addr+4) in [0x78D0, 0x78DC, 0x78E8, 0x78F4, 0x7900, 0x27D5C, 0x27D68, 0x27D74, 0x27D80, 0x27D94]: # Ida ppc module ftl...
+	#		addr += 0x18
+	#		continue
+	#	idaapi.create_insn(get_dword(addr+4) + 0x20400000) #204078d0 hang!?
+	#	# Ida ppc module ftl...
+	#	#idaapi.add_func(get_qword(addr), BADADDR)
+	#	addr += 0x18
 
+	print("[regza_loader] Set Vector names")
 	set_name(0x0100, "__vector_SystemReset", 0)
 	set_name(0x0300, "__vector_DataStorage", 0)
 	set_name(0x0380, "__vector_DataSegment", 0)
